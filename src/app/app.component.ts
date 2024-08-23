@@ -10,7 +10,7 @@ import { Experience } from './experience/experience.component';
 	template: `
 		<ngt-canvas [sceneGraph]="sceneGraph" />
 	`,
-	styles: [],
+	host: { class: 'block h-screen w-screen' }
 })
 export class AppComponent {
 	sceneGraph = Experience;
