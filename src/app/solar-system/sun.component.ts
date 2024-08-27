@@ -1,11 +1,4 @@
-import {
-	ChangeDetectionStrategy,
-	Component,
-	CUSTOM_ELEMENTS_SCHEMA,
-	effect,
-	ElementRef,
-	viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, viewChild } from '@angular/core';
 import { extend, injectBeforeRender, NgtArgs } from 'angular-three';
 import { injectTexture } from 'angular-three-soba/loaders';
 import {
@@ -32,8 +25,7 @@ import vertexShader from './shaders/vertex.glsl';
 	template: `
 		<ngt-group #group>
 			<!-- sun -->
-			<ngt-mesh>
-				<ngt-icosahedron-geometry *args="[5, 12]" />
+			<ngt-mesh [geometry]="icosahedronGeometry">
 				<ngt-mesh-basic-material [map]="sunTexture()" />
 			</ngt-mesh>
 
@@ -41,8 +33,7 @@ import vertexShader from './shaders/vertex.glsl';
 			<ngt-point-light [intensity]="1000" color="#ffff99" [position]="[0, 0, 0]" />
 
 			<!-- rim -->
-			<ngt-mesh [scale]="1.01">
-				<ngt-icosahedron-geometry *args="[5, 12]" />
+			<ngt-mesh [scale]="1.01" [geometry]="icosahedronGeometry">
 				<ngt-shader-material
 					[uniforms]="rimUniforms"
 					[vertexShader]="vertexShader"
@@ -59,8 +50,7 @@ import vertexShader from './shaders/vertex.glsl';
 			</ngt-mesh>
 
 			<!-- glow -->
-			<ngt-mesh [scale]="1.1">
-				<ngt-icosahedron-geometry *args="[5, 12]" />
+			<ngt-mesh [scale]="1.1" [geometry]="icosahedronGeometry">
 				<ngt-shader-material
 					[uniforms]="glowUniforms"
 					[vertexShader]="vertexShader"
@@ -83,6 +73,9 @@ export class Sun {
 
 	private groupRef = viewChild.required<ElementRef<Group>>('group');
 	private coronaGeometryRef = viewChild<ElementRef<IcosahedronGeometry>>('coronaGeometry');
+
+	// we can share the geometry with a simple component property
+	protected icosahedronGeometry = new IcosahedronGeometry(5, 12);
 
 	protected rimUniforms = {
 		color1: { value: new Color(0xffff99) },
@@ -110,14 +103,6 @@ export class Sun {
 		const p = new Vector3();
 		const coronaNoise = new ImprovedNoise();
 
-		effect(() => {
-			const coronaGeometry = this.coronaGeometryRef()?.nativeElement;
-			if (!coronaGeometry) return;
-			const position = coronaGeometry.attributes['position'] as BufferAttribute;
-			if (!position) return;
-			position.usage = DynamicDrawUsage;
-		});
-
 		injectBeforeRender(({ clock }) => {
 			const time = clock.getElapsedTime();
 			const [group, coronaGeometry] = [this.groupRef().nativeElement, this.coronaGeometryRef()?.nativeElement];
@@ -125,6 +110,10 @@ export class Sun {
 
 			const position = coronaGeometry.attributes['position'] as BufferAttribute;
 			if (!position) return;
+
+			if (position.usage !== DynamicDrawUsage) {
+				position.usage = DynamicDrawUsage;
+			}
 
 			const length = position.count;
 

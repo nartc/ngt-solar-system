@@ -9,16 +9,16 @@ import { Planet } from './planet.component';
 	standalone: true,
 	template: `
 		<ngt-mesh [geometry]="planet.planetGeometry()">
-			<ngt-mesh-basic-material [map]="lightsTexture()" [blending]="AdditiveBlending" />
+			<ngt-mesh-basic-material [map]="textures()?.lights" [blending]="AdditiveBlending" />
 		</ngt-mesh>
 
 		<ngt-mesh [geometry]="planet.planetGeometry()" [scale]="1.003">
 			<ngt-mesh-standard-material
-				[map]="cloudsTexture()"
 				[transparent]="true"
 				[opacity]="0.8"
 				[blending]="AdditiveBlending"
-				[alphaMap]="cloudsAlphaTexture()"
+				[map]="textures()?.clouds"
+				[alphaMap]="textures()?.cloudsAlpha"
 			/>
 		</ngt-mesh>
 	`,
@@ -29,10 +29,11 @@ export class EarthDetails {
 	protected readonly AdditiveBlending = AdditiveBlending;
 
 	protected planet = inject(Planet);
-
-	protected lightsTexture = injectTexture(() => './earth-map-2.jpg');
-	protected cloudsTexture = injectTexture(() => './earth-map-3.jpg');
-	protected cloudsAlphaTexture = injectTexture(() => './earth-map-4.jpg');
+	protected textures = injectTexture(() => ({
+		lights: './earth-map-2.jpg',
+		clouds: './earth-map-3.jpg',
+		cloudsAlpha: './earth-map-4.jpg',
+	}));
 
 	constructor() {
 		extend({ Mesh, MeshBasicMaterial, MeshStandardMaterial });

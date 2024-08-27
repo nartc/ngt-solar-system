@@ -168,7 +168,7 @@ export class Planet {
 				group,
 				planetGroup,
 				planetText,
-				{ orbitRotationDirection, orbitSpeed, planetRotationDirection, planetRotationSpeed, planetSize, orbitRadius },
+				{ orbitRotationDirection, orbitSpeed, planetRotationDirection, planetRotationSpeed, planetSize },
 			] = [
 				this.groupRef().nativeElement,
 				this.planetGroupRef().nativeElement,

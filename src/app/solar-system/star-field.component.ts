@@ -41,7 +41,7 @@ export class StarField {
 
 	count = input(1000);
 
-	circleTexture = injectTexture(() => './circle.png');
+	protected circleTexture = injectTexture(() => './circle.png');
 
 	private groupRef = viewChild.required<ElementRef<Group>>('group');
 
@@ -59,8 +59,8 @@ export class StarField {
 
 		return { vertices: new Float32Array(vertices), colors: new Float32Array(colors) };
 	});
-	vertices = pick(this.points, 'vertices');
-	colors = pick(this.points, 'colors');
+	protected vertices = pick(this.points, 'vertices');
+	protected colors = pick(this.points, 'colors');
 
 	constructor() {
 		extend({ Group, Points, BufferGeometry, PointsMaterial, BufferAttribute });
