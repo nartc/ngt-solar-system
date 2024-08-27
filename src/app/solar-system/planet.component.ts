@@ -105,7 +105,12 @@ export class CursorPointer {
 
 			<ngts-text
 				[text]="planet() | titlecase"
-				[options]="{ color: 'white', fontSize: Math.max(1, size() * 1.5), visible: hovered() }"
+				[options]="{
+					color: 'white',
+					position: [$any(planetGroup).position.x, Math.max(1, size() * 2.5), 0],
+					fontSize: Math.max(1, size() * 1.5),
+					visible: hovered(),
+				}"
 			/>
 		</ngt-group>
 	`,
@@ -130,7 +135,6 @@ export class Planet {
 
 	private groupRef = viewChild.required<ElementRef<Group>>('group');
 	private planetGroupRef = viewChild.required<ElementRef<Group>>('planetGroup');
-	private planetTextRef = viewChild.required(NgtsText);
 
 	protected planetTexture = injectTexture(
 		() => {
@@ -164,17 +168,8 @@ export class Planet {
 	constructor() {
 		extend({ Group, Mesh, TorusGeometry, RingGeometry, MeshBasicMaterial, MeshPhongMaterial, ShaderMaterial });
 		injectBeforeRender(() => {
-			const [
-				group,
-				planetGroup,
-				planetText,
-				{ orbitRotationDirection, orbitSpeed, planetRotationDirection, planetRotationSpeed, planetSize },
-			] = [
-				this.groupRef().nativeElement,
-				this.planetGroupRef().nativeElement,
-				this.planetTextRef(),
-				this.planetConfig(),
-			];
+			const [group, planetGroup, { orbitRotationDirection, orbitSpeed, planetRotationDirection, planetRotationSpeed }] =
+				[this.groupRef().nativeElement, this.planetGroupRef().nativeElement, this.planetConfig()];
 
 			if (orbitRotationDirection === 'clockwise') {
 				group.rotation.y -= orbitSpeed;
@@ -187,8 +182,6 @@ export class Planet {
 			} else if (planetRotationDirection === 'counterclockwise') {
 				planetGroup.rotation.y += planetRotationSpeed;
 			}
-
-			planetText.troikaMesh.position.set(planetGroup.position.x, Math.max(1, planetSize * 2.5), planetGroup.position.z);
 		});
 	}
 }
