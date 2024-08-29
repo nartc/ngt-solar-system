@@ -37,8 +37,8 @@ import vertexShader from './shaders/vertex.glsl';
 export class CursorPointer {
 	constructor() {
 		const host = inject<ElementRef<Object3D>>(ElementRef);
-		const nativeElement = host.nativeElement;
 
+		const nativeElement = host.nativeElement;
 		if (!nativeElement.isObject3D) return;
 
 		const localState = getLocalState(nativeElement);
